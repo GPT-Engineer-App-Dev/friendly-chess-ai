@@ -1,4 +1,4 @@
-import { Home, ChessKnight } from "lucide-react";
+import { Home } from "lucide-react";
 import Index from "./pages/Index.jsx";
 
 /**
@@ -8,7 +8,7 @@ export const navItems = [
   {
     title: "Home",
     to: "/",
-    icon: <ChessKnight className="h-4 w-4" />,
+    icon: <Home className="h-4 w-4" />,
     page: <Index />,
   },
 ];
