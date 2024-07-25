@@ -3,6 +3,7 @@ import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 const ChessGame = () => {
   const [game, setGame] = useState(new Chess());
@@ -42,6 +43,8 @@ const ChessGame = () => {
       });
     } else {
       console.error('No valid moves available');
+      toast.error('AI couldn\'t make a move. Resetting the game.');
+      resetGame();
     }
   }
 
@@ -112,6 +115,7 @@ const ChessGame = () => {
       setTimeout(makeRandomMove, 300);
     } catch (error) {
       console.error('Invalid move:', error);
+      toast.error('Invalid move. Please try again.');
       resetFirstMove(square);
     }
   }
