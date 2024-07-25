@@ -14,7 +14,7 @@ const ChessGame = () => {
 
   function safeGameMutate(modify) {
     setGame((g) => {
-      const update = { ...g };
+      const update = new Chess(g.fen());
       modify(update);
       return update;
     });
@@ -64,25 +64,18 @@ const ChessGame = () => {
     }
 
     // attempt to make move
-    const gameCopy = { ...game };
-    const move = gameCopy.move({
-      from: moveFrom,
-      to: square,
-      promotion: 'q', // always promote to a queen for example simplicity
-    });
-
-    // if invalid, setMoveFrom and reset
-    if (move === null) {
+    const move = { from: moveFrom, to: square, promotion: 'q' };
+    
+    try {
+      const newGame = new Chess(game.fen());
+      newGame.move(move);
+      setGame(newGame);
+      setMoveFrom('');
+      setOptionSquares({});
+      setTimeout(makeRandomMove, 300);
+    } catch (error) {
       resetFirstMove(square);
-      return;
     }
-
-    setGame(gameCopy);
-    setMoveFrom('');
-    setOptionSquares({});
-
-    // AI move
-    setTimeout(makeRandomMove, 300);
   }
 
   function onSquareRightClick(square) {
