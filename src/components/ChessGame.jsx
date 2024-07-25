@@ -21,20 +21,37 @@ const ChessGame = () => {
   }
 
   function makeRandomMove() {
-    const possibleMoves = game.moves();
+    const possibleMoves = game.moves({ verbose: true });
     if (game.isGameOver() || possibleMoves.length === 0) return;
-    const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-    safeGameMutate((game) => {
-      game.move(possibleMoves[randomIndex]);
-    });
+  
+    let validMove = null;
+    while (possibleMoves.length > 0 && !validMove) {
+      const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+      const move = possibleMoves[randomIndex];
+      try {
+        validMove = game.move(move);
+      } catch (error) {
+        console.error('Invalid move:', error);
+        possibleMoves.splice(randomIndex, 1);
+      }
+    }
+
+    if (validMove) {
+      safeGameMutate((g) => {
+        g.move(validMove);
+      });
+    } else {
+      console.error('No valid moves available');
+    }
   }
 
   useEffect(() => {
-    if (game.turn() === 'b') {
-      setTimeout(makeRandomMove, 300);
+    if (!gameOver && game.turn() === 'b') {
+      const timer = setTimeout(makeRandomMove, 300);
+      return () => clearTimeout(timer);
     }
     checkGameOver();
-  }, [game]);
+  }, [game, gameOver]);
 
   function checkGameOver() {
     if (game.isCheckmate()) {
