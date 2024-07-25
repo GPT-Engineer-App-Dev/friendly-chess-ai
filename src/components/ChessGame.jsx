@@ -24,28 +24,18 @@ const ChessGame = () => {
   function makeRandomMove() {
     const possibleMoves = game.moves({ verbose: true });
     if (game.isGameOver() || possibleMoves.length === 0) return;
-  
-    let validMove = null;
-    while (possibleMoves.length > 0 && !validMove) {
-      const randomIndex = Math.floor(Math.random() * possibleMoves.length);
-      const move = possibleMoves[randomIndex];
-      try {
-        validMove = game.move(move);
-      } catch (error) {
-        console.error('Invalid move:', error);
-        possibleMoves.splice(randomIndex, 1);
-      }
-    }
 
-    if (validMove) {
-      safeGameMutate((g) => {
-        g.move(validMove);
-      });
-    } else {
-      console.error('No valid moves available');
-      toast.error('AI couldn\'t make a move. Resetting the game.');
-      resetGame();
-    }
+    const randomIndex = Math.floor(Math.random() * possibleMoves.length);
+    const move = possibleMoves[randomIndex];
+
+    safeGameMutate((g) => {
+      const result = g.move(move);
+      if (!result) {
+        console.error('Invalid move by AI');
+        toast.error('AI made an invalid move. Resetting the game.');
+        resetGame();
+      }
+    });
   }
 
   useEffect(() => {
@@ -93,31 +83,26 @@ const ChessGame = () => {
     }
 
     // If a piece is already selected, try to make a move
-    try {
-      const move = game.move({
-        from: moveFrom,
-        to: square,
-        promotion: 'q', // always promote to queen for simplicity
-      });
+    const move = game.move({
+      from: moveFrom,
+      to: square,
+      promotion: 'q', // always promote to queen for simplicity
+    });
 
-      if (move === null) {
-        // If the move was invalid, reset the first move
-        resetFirstMove(square);
-        return;
-      }
-
-      // If the move was valid, update the game state
-      setGame(new Chess(game.fen()));
-      setMoveFrom('');
-      setOptionSquares({});
-
-      // Make an AI move after a short delay
-      setTimeout(makeRandomMove, 300);
-    } catch (error) {
-      console.error('Invalid move:', error);
+    if (move === null) {
+      // If the move was invalid, reset the first move
       toast.error('Invalid move. Please try again.');
       resetFirstMove(square);
+      return;
     }
+
+    // If the move was valid, update the game state
+    setGame(new Chess(game.fen()));
+    setMoveFrom('');
+    setOptionSquares({});
+
+    // Make an AI move after a short delay
+    setTimeout(makeRandomMove, 300);
   }
 
   function onSquareRightClick(square) {
