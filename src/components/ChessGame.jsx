@@ -22,7 +22,7 @@ const ChessGame = () => {
 
   function makeRandomMove() {
     const possibleMoves = game.moves();
-    if (game.game_over() || game.in_draw() || possibleMoves.length === 0) return;
+    if (game.isGameOver() || possibleMoves.length === 0) return;
     const randomIndex = Math.floor(Math.random() * possibleMoves.length);
     safeGameMutate((game) => {
       game.move(possibleMoves[randomIndex]);
@@ -37,13 +37,13 @@ const ChessGame = () => {
   }, [game]);
 
   function checkGameOver() {
-    if (game.in_checkmate()) {
+    if (game.isCheckmate()) {
       setGameOver(true);
       setGameOverMessage(game.turn() === 'w' ? 'Black wins by checkmate!' : 'White wins by checkmate!');
-    } else if (game.in_draw()) {
+    } else if (game.isDraw()) {
       setGameOver(true);
       setGameOverMessage('Game ended in a draw!');
-    } else if (game.in_stalemate()) {
+    } else if (game.isStalemate()) {
       setGameOver(true);
       setGameOverMessage('Game ended in a stalemate!');
     }
