@@ -1,29 +1,20 @@
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import Layout from "./layouts/clean"; // available: clean, navbar, sidebar
-import { navItems } from "./nav-items";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
 
-const queryClient = new QueryClient();
-
-const App = () => {
+function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router>
+    <Router>
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <main className="container mx-auto px-4 py-8">
           <Routes>
-            <Route path="/" element={<Layout />}>
-              {navItems.map((item) => (
-                <Route key={item.to} path={item.to} element={item.page} />
-              ))}
-            </Route>
+            <Route path="/" element={<Home />} />
           </Routes>
-        </Router>
-      </TooltipProvider>
-    </QueryClientProvider>
+        </main>
+      </div>
+    </Router>
   );
-};
+}
 
 export default App;
